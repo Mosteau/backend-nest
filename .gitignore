@@ -65,3 +65,6 @@ pnpm-debug.log*
 
 # Lerna debug logs
 lerna-debug.log*
+
+# Kiro IDE
+.kiro/

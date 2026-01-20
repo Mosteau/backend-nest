@@ -23,92 +23,168 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Task management backend API built with NestJS and MongoDB.
 
-## Project setup
+## Features
+
+- Task CRUD operations (create, read, update, delete)
+- MongoDB integration with Mongoose ODM
+- Input validation with class-validator
+- Automatic timestamps (createdAt, updatedAt)
+- Docker containerization
+
+## Prerequisites
+
+### Option 1: With Docker (Recommended)
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+  - Windows: Docker Desktop for Windows
+  - Linux: Docker Engine + Docker Compose
+  - macOS: Docker Desktop for Mac
+
+### Option 2: Without Docker
+
+- [Node.js](https://nodejs.org/) 20.x or higher
+- [pnpm](https://pnpm.io/) package manager
+- [MongoDB](https://www.mongodb.com/try/download/community) 7.x running locally
+
+## Installation
 
 ### With Docker (Recommended)
 
+1. Clone the repository
 ```bash
-# Start the application with MongoDB
-$ docker-compose up -d
+git clone <repository-url>
+cd backend-nest
+```
 
-# View logs
-$ docker-compose logs -f
+2. Make sure Docker Desktop is running
 
-# Stop the application
-$ docker-compose down
+3. Start the application
+```bash
+docker-compose up -d
 ```
 
 The application will be available at `http://localhost:3000`
 
+MongoDB will be available at `mongodb://localhost:27017`
+
+**Useful Docker commands:**
+```bash
+# View logs
+docker-compose logs -f
+
+# View app logs only
+docker-compose logs -f app
+
+# Stop the application
+docker-compose down
+
+# Rebuild and restart
+docker-compose up -d --build
+
+# Remove volumes (clean database)
+docker-compose down -v
+```
+
 ### Without Docker
 
+1. Install dependencies
 ```bash
-$ pnpm install
+pnpm install
 ```
 
-## Compile and run the project
+2. Make sure MongoDB is running locally on port 27017
 
+3. (Optional) Set environment variables
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+# Create .env file
+PORT=3000
+MONGO_URI=mongodb://localhost:27017/dbtest
 ```
 
-## Run tests
-
+4. Start the application
 ```bash
-# unit tests
-$ pnpm run test
+# Development mode with hot reload
+pnpm run start:dev
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+# Production mode
+pnpm run build
+pnpm run start:prod
 ```
 
-## Deployment
+## API Endpoints
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Tasks
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- `GET /tasks` - Get all tasks
+- `GET /tasks/:id` - Get a task by ID
+- `POST /tasks` - Create a new task
+  ```json
+  {
+    "title": "Task title",
+    "description": "Task description"
+  }
+  ```
+- `PATCH /tasks/:id` - Update a task
+  ```json
+  {
+    "title": "Updated title",
+    "description": "Updated description",
+    "completed": true
+  }
+  ```
+- `DELETE /tasks/:id` - Delete a task
+
+## Testing
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+# Unit tests
+pnpm run test
+
+# Watch mode
+pnpm run test:watch
+
+# Test coverage
+pnpm run test:cov
+
+# E2E tests
+pnpm run test:e2e
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Code Quality
 
-## Resources
+```bash
+# Lint and auto-fix
+pnpm run lint
 
-Check out a few resources that may come in handy when working with NestJS:
+# Format code
+pnpm run format
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Server port |
+| `MONGO_URI` | `mongodb://localhost:27017/dbtest` | MongoDB connection string |
+
+## Tech Stack
+
+- NestJS 11
+- TypeScript 5.7
+- MongoDB 7
+- Mongoose 9
+- Docker & Docker Compose
+- class-validator & class-transformer
+- Jest for testing
+
+
 
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
 ## License
 
