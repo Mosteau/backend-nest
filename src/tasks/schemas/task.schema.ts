@@ -5,6 +5,7 @@ export type TaskDocument = HydratedDocument<Task>;
 
 @Schema({ timestamps: true })
 export class Task {
+  // grâce à trim le texte entrant est automatiquement supprimé des espaces inutiles en début et fin de chaîne
   @Prop({ required: true, trim: true, minlength: 1, maxlength: 200 })
   title: string;
 

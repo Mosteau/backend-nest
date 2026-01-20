@@ -8,7 +8,7 @@ export class CreateTaskDto {
   title: string;
 
   @IsString()
-  @IsOptional()
+  @IsOptional() // ici la description est optionnelle
   @MaxLength(1000)
   description?: string;
 }
