@@ -27,6 +27,23 @@
 
 ## Project setup
 
+### With Docker (Recommended)
+
+```bash
+# Start the application with MongoDB
+$ docker-compose up -d
+
+# View logs
+$ docker-compose logs -f
+
+# Stop the application
+$ docker-compose down
+```
+
+The application will be available at `http://localhost:3000`
+
+### Without Docker
+
 ```bash
 $ pnpm install
 ```
