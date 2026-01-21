@@ -23,15 +23,43 @@
 
 ## Description
 
-Task management backend API built with NestJS and MongoDB.
+Task management backend API built with NestJS and MongoDB, featuring a scalable and maintainable architecture.
 
 ## Features
 
-- Task CRUD operations (create, read, update, delete)
-- MongoDB integration with Mongoose ODM
-- Input validation with class-validator
-- Automatic timestamps (createdAt, updatedAt)
-- Docker containerization
+- ✅ Task CRUD operations with advanced properties (status, priority, tags, due dates)
+- ✅ Scalable architecture with separated DTOs, Entities, and Schemas
+- ✅ MongoDB integration with Mongoose ODM
+- ✅ Strong typing with TypeScript enums and interfaces
+- ✅ Input validation with class-validator
+- ✅ Automatic timestamps (createdAt, updatedAt)
+- ✅ Docker containerization
+
+## Architecture
+
+This project follows a clean, scalable architecture:
+
+```
+src/
+├── common/              # Shared resources
+│   ├── enums/          # Reusable enumerations
+│   └── interfaces/     # Common interfaces
+└── tasks/              # Task module
+    ├── dto/            # Data Transfer Objects (validation)
+    ├── entities/       # Business entities (pure TypeScript)
+    ├── schemas/        # Mongoose schemas (database layer)
+    ├── tasks.controller.ts
+    ├── tasks.service.ts
+    └── tasks.module.ts
+```
+
+**Key Principles:**
+- **DTOs** for input validation
+- **Entities** for business logic (database-agnostic)
+- **Schemas** for MongoDB persistence
+- **Enums** for type-safe constants
+
+📖 See [Architecture Guide](docs/architecture-improved.md) for details
 
 ## Prerequisites
 
@@ -123,18 +151,27 @@ pnpm run start:prod
   ```json
   {
     "title": "Task title",
-    "description": "Task description"
+    "description": "Task description",
+    "status": "todo",
+    "priority": "high",
+    "dueDate": "2026-01-25T10:00:00Z",
+    "tags": ["backend", "urgent"]
   }
   ```
 - `PATCH /tasks/:id` - Update a task
   ```json
   {
-    "title": "Updated title",
-    "description": "Updated description",
-    "completed": true
+    "status": "completed",
+    "priority": "medium"
   }
   ```
 - `DELETE /tasks/:id` - Delete a task
+
+**Available Enums:**
+- `status`: `todo`, `in_progress`, `completed`
+- `priority`: `low`, `medium`, `high`, `urgent`
+
+📖 See [API Examples](docs/exemples-api.md) for detailed usage
 
 ## Testing
 
@@ -178,6 +215,13 @@ pnpm run format
 - Docker & Docker Compose
 - class-validator & class-transformer
 - Jest for testing
+
+## Documentation
+
+- 📖 [Architecture Guide](docs/architecture-improved.md) - Detailed architecture explanation
+- 📖 [Structure Guide](docs/guide-structure.md) - How to add new modules
+- 📖 [API Examples](docs/exemples-api.md) - Complete API usage examples
+- 📖 [NestJS Architecture](docs/architecture-nestjs.md) - Original architecture notes
 
 
 

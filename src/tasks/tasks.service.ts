@@ -2,8 +2,8 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
 import { Task, TaskDocument } from './schemas/task.schema';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { CreateTaskDto, UpdateTaskDto } from './dto';
+import { TaskEntity } from './entities';
 
 /**
  * Service qui gère la logique métier des tâches
@@ -20,99 +20,102 @@ export class TasksService {
 
   /**
    * Créer une nouvelle tâche
-   * @param createTaskDto - Données validées pour créer la tâche (title, description)
-   * @returns La tâche créée avec son ID généré par MongoDB
-   * 
-   * Note : Pas besoin de vérifier l'ID ici car MongoDB le génère automatiquement
+   * @param createTaskDto - Données validées pour créer la tâche
+   * @returns L'entity Task créée
    */
-  async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    // create() : crée ET sauvegarde le document en une seule opération
-    return this.taskModel.create(createTaskDto);
+  async create(createTaskDto: CreateTaskDto): Promise<TaskEntity> {
+    const task = await this.taskModel.create(createTaskDto);
+    return this.toEntity(task);
   }
 
   /**
    * Récupérer toutes les tâches
-   * @returns Un tableau de toutes les tâches dans la base
+   * @returns Un tableau de toutes les tâches
    */
-  async findAll(): Promise<Task[]> {
-    // find() sans paramètre : récupère tous les documents de la collection
-    return this.taskModel.find().exec();
+  async findAll(): Promise<TaskEntity[]> {
+    const tasks = await this.taskModel.find().exec();
+    return tasks.map(task => this.toEntity(task));
   }
 
   /**
    * Récupérer une tâche par son ID
-   * @param id - L'identifiant MongoDB de la tâche (format ObjectId)
-   * @returns La tâche trouvée
+   * @param id - L'identifiant MongoDB de la tâche
+   * @returns L'entity Task trouvée
    * @throws BadRequestException si l'ID n'est pas au bon format
    * @throws NotFoundException si la tâche n'existe pas
    */
-  async findById(id: string): Promise<Task> {
-    // 1. Vérifier que l'ID est au format MongoDB ObjectId (24 caractères hexadécimaux)
+  async findById(id: string): Promise<TaskEntity> {
     if (!isValidObjectId(id)) {
       throw new BadRequestException('ID invalide');
     }
 
-    // 2. Chercher la tâche dans MongoDB
     const task = await this.taskModel.findById(id).exec();
 
-    // 3. Si MongoDB retourne null, la tâche n'existe pas
     if (!task) {
       throw new NotFoundException(`Tâche avec l'ID ${id} introuvable`);
     }
 
-    // 4. Retourner la tâche trouvée
-    return task;
+    return this.toEntity(task);
   }
 
   /**
    * Mettre à jour une tâche existante
    * @param id - L'identifiant de la tâche à modifier
-   * @param updateTaskDto - Les champs à mettre à jour (title, description, completed)
-   * @returns La tâche mise à jour
+   * @param updateTaskDto - Les champs à mettre à jour
+   * @returns L'entity Task mise à jour
    * @throws BadRequestException si l'ID n'est pas valide
    * @throws NotFoundException si la tâche n'existe pas
    */
-  async update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task> {
-    // 1. Vérifier le format de l'ID
+  async update(id: string, updateTaskDto: UpdateTaskDto): Promise<TaskEntity> {
     if (!isValidObjectId(id)) {
       throw new BadRequestException('ID invalide');
     }
 
-    // 2. Mettre à jour la tâche
-    // { new: true } : retourne la tâche APRÈS modification (sinon on reçoit l'ancienne version)
     const task = await this.taskModel.findByIdAndUpdate(id, updateTaskDto, { new: true }).exec();
 
-    // 3. Vérifier si la tâche existe
     if (!task) {
       throw new NotFoundException(`Tâche avec l'ID ${id} introuvable`);
     }
 
-    // 4. Retourner la tâche modifiée
-    return task;
+    return this.toEntity(task);
   }
 
   /**
    * Supprimer une tâche
    * @param id - L'identifiant de la tâche à supprimer
-   * @returns La tâche supprimée (utile pour confirmer quelle tâche a été supprimée)
+   * @returns L'entity Task supprimée
    * @throws BadRequestException si l'ID n'est pas valide
    * @throws NotFoundException si la tâche n'existe pas
    */
-  async delete(id: string): Promise<Task> {
-    // 1. Vérifier le format de l'ID
+  async delete(id: string): Promise<TaskEntity> {
     if (!isValidObjectId(id)) {
       throw new BadRequestException('ID invalide');
     }
 
-    // 2. Supprimer la tâche de MongoDB
     const task = await this.taskModel.findByIdAndDelete(id).exec();
 
-    // 3. Vérifier si la tâche existait
     if (!task) {
       throw new NotFoundException(`Tâche avec l'ID ${id} introuvable`);
     }
 
-    // 4. Retourner la tâche supprimée
-    return task;
+    return this.toEntity(task);
+  }
+
+  /**
+   * Convertit un document Mongoose en Entity
+   * Sépare la couche base de données de la couche métier
+   */
+  private toEntity(doc: TaskDocument): TaskEntity {
+    return new TaskEntity({
+      id: doc._id.toString(),
+      title: doc.title,
+      description: doc.description,
+      status: doc.status,
+      priority: doc.priority,
+      dueDate: doc.dueDate,
+      tags: doc.tags,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    });
   }
 }

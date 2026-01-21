@@ -1,4 +1,14 @@
-import { IsString, IsNotEmpty, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { 
+  IsString, 
+  IsNotEmpty, 
+  IsOptional, 
+  IsEnum, 
+  IsDateString,
+  IsArray,
+  MaxLength, 
+  MinLength 
+} from 'class-validator';
+import { TaskStatus, TaskPriority } from '../../common/enums';
 
 export class CreateTaskDto {
   @IsString()
@@ -8,7 +18,24 @@ export class CreateTaskDto {
   title: string;
 
   @IsString()
-  @IsOptional() // ici la description est optionnelle
+  @IsOptional()
   @MaxLength(1000)
   description?: string;
+
+  @IsEnum(TaskStatus)
+  @IsOptional()
+  status?: TaskStatus;
+
+  @IsEnum(TaskPriority)
+  @IsOptional()
+  priority?: TaskPriority;
+
+  @IsDateString()
+  @IsOptional()
+  dueDate?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  tags?: string[];
 }
